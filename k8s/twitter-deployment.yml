@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twitter-stream
+spec:
+  selector:
+    matchLabels:
+      app: twitter-stream
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: twitter-stream
+    spec:
+      containers:
+        - name: twitter-stream
+          image: 213745435605.dkr.ecr.us-east-1.amazonaws.com/twitter-stream:latest
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          env:
+            - name: GET_HOSTS_FROM
+              value: env
+          ports:
+            - containerPort: 3000

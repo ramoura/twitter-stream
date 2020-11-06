@@ -4,6 +4,7 @@
   "description": "Consuming twitter streaming and sending it to a kafka topic.",
   "main": "index.js",
   "scripts": {
+    "start": "node ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/ramoura/twitter-stream#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "kafka-node": "^5.0.0",
     "twitter": "^1.7.1"
   }

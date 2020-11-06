@@ -1,9 +1,7 @@
+/*
 var credentials = require('./twitter.credentials.json');
 var Twitter = require('twitter');
-var kafka = require('kafka-node'),
-    Producer = kafka.Producer,
-    clientK = new kafka.KafkaClient({kafkaHost: 'kafka-dev:9092'}),
-    producer = new Producer(clientK);
+const MessageProducer = require('./drivers/messageProducer')
 
 var client = new Twitter({
     consumer_key: credentials.consumer_key,
@@ -13,12 +11,28 @@ var client = new Twitter({
 });
 
 
+const messageProducer = new MessageProducer('test-events')
 
-producer.on('ready', function () {
-    var stream = client.stream('statuses/filter', { track: 'vacina, bolsonaro, stf' });
-    stream.on('data', function (event) {
-        producer.send([{ topic: 'test-events', messages: [JSON.stringify(event.text)] }], function (err, data) {
-            if(err) console.log(err)
-        });
-    });
+
+const stream = client.stream('statuses/filter', { track: 'vacina, bolsonaro, stf' });
+stream.on('data', function (event) {
+    messageProducer.sendMessage(JSON.stringify(event))
 });
+*/
+
+//---
+const MessageConsumer = require('./drivers/messageConsumer')
+const EventProcessors = require('./domain/processor/eventProcessors')
+
+const ConfigEventProcessor = require('./domain/processor/configEventProcessor')
+const ResumeEventProcessor = require('./domain/processor/resumeEventProcessor')
+
+var configEventProcessor = new ConfigEventProcessor();
+var resumeEventProcessor = new ResumeEventProcessor();
+
+var eventProcessors = new EventProcessors([configEventProcessor,resumeEventProcessor])
+
+var messageConsumer = new MessageConsumer('twitter-stream-events')
+messageConsumer.onMessage(msg => {
+    eventProcessors.process(msg)
+})
