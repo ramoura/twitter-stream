@@ -11,12 +11,10 @@ function MessageProducer(topic){
 }
 
 MessageProducer.prototype.sendMessage = function(message){
-
-    //convert to stringfy
-    var messageStr = JSON.stringify(message)
     if(this._producer.ready) {
-        this._producer.send([{ topic: this.topic, messages: [messageStr] }], function (err, data) {
+        this._producer.send([{ topic: this.topic, messages: [message] }], function (err, data) {
             if (err) console.log(err)
+            //console.log(data)
         });
     }else{
         console.log("Kafka is not ready")

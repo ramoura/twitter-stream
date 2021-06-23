@@ -1,38 +1,18 @@
-/*
-var credentials = require('./twitter.credentials.json');
-var Twitter = require('twitter');
-const MessageProducer = require('./drivers/messageProducer')
+const TwitterStream = require('./domain/twitterStream')
+const EventProcessors = require('./domain/event/eventProcessors')
 
-var client = new Twitter({
-    consumer_key: credentials.consumer_key,
-    consumer_secret: credentials.consumer_secret,
-    access_token_key: credentials.access_token_key,
-    access_token_secret: credentials.access_token_secret
-});
+const twitterStream = new TwitterStream();
+const eventProcessors = new EventProcessors();
+
+twitterStream.start()
+eventProcessors.start()
 
 
-const messageProducer = new MessageProducer('test-events')
 
+const eventEmitter = require('./domain/eventEmitter');
 
-const stream = client.stream('statuses/filter', { track: 'vacina, bolsonaro, stf' });
-stream.on('data', function (event) {
-    messageProducer.sendMessage(JSON.stringify(event))
-});
-*/
+setTimeout(function () {
+    eventEmitter.emit('stream-config', { track: 'vacina, bolsonaro, trump, biden' });
+    eventEmitter.emit('stream-resume');
+}, 10000);
 
-//---
-const MessageConsumer = require('./drivers/messageConsumer')
-const EventProcessors = require('./domain/processor/eventProcessors')
-
-const ConfigEventProcessor = require('./domain/processor/configEventProcessor')
-const ResumeEventProcessor = require('./domain/processor/resumeEventProcessor')
-
-var configEventProcessor = new ConfigEventProcessor();
-var resumeEventProcessor = new ResumeEventProcessor();
-
-var eventProcessors = new EventProcessors([configEventProcessor,resumeEventProcessor])
-
-var messageConsumer = new MessageConsumer('twitter-stream-events')
-messageConsumer.onMessage(msg => {
-    eventProcessors.process(msg)
-})

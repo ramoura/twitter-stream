@@ -1,11 +1,12 @@
+const eventEmitter = require('../eventEmitter');
 
 
 function ResumeEventProcessor(){
 
 }
 
-ResumeEventProcessor.prototype.execute = function(doProcess){
-    console.log('Resume', doProcess)
+ResumeEventProcessor.prototype.execute = function(){
+    eventEmitter.emit('stream-resume');
 }
 
 ResumeEventProcessor.prototype.accept = function(type){
